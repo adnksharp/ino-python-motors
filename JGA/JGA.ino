@@ -3,11 +3,13 @@
 #include "motor.h"
 #include <Ticker.h>
 
-Ticker timer;
+byte ID = 0;
+Ticker times;
 Service api;
 Motor motor;
 
 extern void encoder();
+extern void post();
 
 void setup() 
 {
@@ -16,9 +18,10 @@ void setup()
 		pinMode(i, OUTPUT);
 	Serial.begin(115200);
 
-	api.init();
-	api.config(LED);
+	api.init(ID, LED);
+	api.config();
 	attachInterrupt(digitalPinToInterrupt(ENC_A), encoder, CHANGE);
+	times.attach_ms(api.times, post);
 	digitalWrite(LED, LOW);
 }
 
