@@ -16,6 +16,7 @@ void setup()
 	byte outs[6] = {LED, ENC_A, ENC_B, M_CW, M_CCW, M_PWM};
 	for (byte i: outs)
 		pinMode(i, OUTPUT);
+
 	Serial.begin(115200);
 
 	api.init(ID, LED);
@@ -23,6 +24,7 @@ void setup()
 	attachInterrupt(digitalPinToInterrupt(ENC_A), encoder, CHANGE);
 	times.attach_ms(api.times, post);
 	digitalWrite(LED, LOW);
+	Serial.println("Sketch corriendo!");
 }
 
 void loop() 
