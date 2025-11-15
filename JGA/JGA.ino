@@ -1,33 +1,38 @@
 #include "config.h"
 #include "web.h"
-#include "motor.h"
+//#include "motor.h"
 #include <Ticker.h>
 
 byte ID = 0;
 Ticker times;
 Service api;
-Motor motor;
+//Motor motor;
 
-extern void encoder();
+//extern void encoder();
 extern void post();
 
 void setup() 
 {
+	Serial.begin(115200);
+	delay(1100);
 	byte outs[6] = {LED, ENC_A, ENC_B, M_CW, M_CCW, M_PWM};
-	for (byte i: outs)
+	for (byte i = 0; i < sizeof(outs) / sizeof(outs[0]); i++)
 		pinMode(i, OUTPUT);
 
-	Serial.begin(115200);
-
-	api.init(ID, LED);
+	Serial.print("Start API");
+	api.init(ID);
+	Serial.println("...");
 	api.config();
-	attachInterrupt(digitalPinToInterrupt(ENC_A), encoder, CHANGE);
+	Serial.print("Start Threads");
+	//attachInterrupt(digitalPinToInterrupt(ENC_A), encoder, CHANGE);
+	Serial.println("...");
 	times.attach_ms(api.times, post);
-	digitalWrite(LED, LOW);
 	Serial.println("Sketch corriendo!");
 }
 
 void loop() 
 {
+	//Serial.println("Running...");
+	//delay(5000);
 }
 

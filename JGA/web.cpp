@@ -15,35 +15,39 @@ void post()
 		http.begin(api.postURI); 
 		http.addHeader("Content-Type", "application/json"); 
 		
-		String pos = String(motor.get());
+		String pos = "0.00";//String(motor.get());
 		String httpRequestData = "{\"id\":\"0\",\"position\":" + pos + "}";
 
 		int httpResponseCode = http.POST(httpRequestData);
 
 		if (httpResponseCode > 0) 
-			digitalWrite(api.led, LOW);
+			neopixelWrite(LED, 0, 50, 50);
 		else
-			digitalWrite(api.led, HIGH);
+			neopixelWrite(LED, 255, 200, 0);
 		http.end();
 	}
 	else
-		digitalWrite(api.led, HIGH);
+		neopixelWrite(LED, 255, 50, 0);
 }
 
-void Service::init(byte id, byte led)
+void Service::init(byte ID)
 {
-	api.ssid = SSID;
-	api.pass = PASS;
-	api.postURI = SERVER + api.postURI;
-	api.subURI = SERVER + api.subURI;
+	id = ID;
+	ssid = SSID;
+	pass = PASS;
+	postURI = SERVER + postURI;
+	subURI = SERVER + subURI;
 }
 
 void Service::config()
 {
-	WiFi.begin(api.ssid, api.pass);
-	while (WiFi.status() != WL_CONNECTED) 
-	{
-		delay(50);
-		digitalWrite(led, !digitalRead(led));
-	}
+	  WiFi.begin(ssid, pass);
+  Serial.println("Connecting");
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Connected to WiFi network with IP Address: ");
+  Serial.println(WiFi.localIP());
 }

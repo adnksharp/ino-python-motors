@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#define LED    2
+#define LED   RGB_BUILTIN
 #define ENC_A 16
 #define ENC_B 17
 #define M_CW  25

@@ -7,9 +7,9 @@ struct Service {
 	String postURI = "enc_status",
 		subURI     = "motor_cmd";
 	short times = 10;
-	byte id, led;
+	byte id;
 	double pos;
-	void init(byte id, byte led);
+	void init(byte ID);
 	void config();
 	void post();
 };
