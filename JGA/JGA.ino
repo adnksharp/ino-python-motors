@@ -12,7 +12,8 @@ extern void post(void * parameter);
 void setup() 
 {
 	Serial.begin(115200);
-	delay(1100);
+	while (!Serial)
+		continue;
 
 	api.init(ID);
 	motor.init();

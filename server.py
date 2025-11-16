@@ -8,7 +8,7 @@ def receive_data():
         data = request.get_json()
         print(f">> {data}")
 
-        return jsonify({"status": "success", "message": "Data received"}), 200
+        return jsonify({"status": "success", "message": "Data received", "voltage": 0}), 200
     else:
         return jsonify({"status": "error", "message": "Content-Type must be application/json"}), 400
 

@@ -6,9 +6,6 @@
 extern Service api;
 extern Motor motor;
 
-String httpRequestData = "{\"id\":\"0\",\"position\":0.0}";
-int httpResponseCode = 0;
-
 void post(void * parameter)
 {
 	while(1)
@@ -19,11 +16,23 @@ void post(void * parameter)
 
 			http.begin(api.postURI); 
 			http.addHeader("Content-Type", "application/json"); 
-			httpRequestData = "{\"id\":\"0\",\"position\":" + String(motor.get()) + "}";
-			httpResponseCode = http.POST(httpRequestData);
+			api.request = "{\"id\":\"0\",\"position\":" + String(motor.get()) + "}";
+			api.code = http.POST(api.request);
 
-			if (httpResponseCode > 0) 
-				neopixelWrite(LED, 10, 10, 10);
+			if (api.code == 200)
+			{
+				api.response = http.getString();
+				StaticJsonDocument<200> doc;
+				DeserializationError error = deserializeJson(doc, api.response);
+
+				if (error) 
+					neopixelWrite(LED, 255, 100, 0);
+				else 
+				{
+					motor.set(doc["voltage"] | 0.0); 
+					neopixelWrite(LED, 10, 10, 10);
+				}
+			}
 			else
 				neopixelWrite(LED, 255, 100, 0);
 			http.end();
@@ -53,6 +62,7 @@ void Service::init(byte ID)
 void Service::verify()
 {
 	neopixelWrite(LED, 255, 0, 0);
-	while(WiFi.status() != WL_CONNECTED) { delay(100); }
+	while(WiFi.status() != WL_CONNECTED)
+		continue;
 	neopixelWrite(LED, 0, 0, 0);
 }

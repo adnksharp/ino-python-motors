@@ -15,6 +15,6 @@ const byte M[3][2] = {
 #define ENC_A 15
 #define ENC_B 16
 
-#define M_PWM 17
-#define M_CW  18
-#define M_CCW  8
+#define M_PWM  8
+#define M_CW   3
+#define M_CCW  9

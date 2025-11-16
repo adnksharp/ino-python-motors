@@ -1,14 +1,19 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <ArduinoJson.h>
 
 struct Service {
 	char* ssid;
 	char* pass;
 	String postURI = "enc_status",
-		subURI     = "motor_cmd";
-	short times = 10;
-	byte id;
-	double pos;
+		subURI     = "motor_cmd",
+		request    = "",
+		response   = "";
+	short times    = 10;
+	byte id        = 0, 
+		 code      = 0;
+	double pos     = 0.0;
+
 	void init(byte ID);
 	void config();
 	void post();
