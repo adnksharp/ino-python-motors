@@ -22,6 +22,4 @@ void setup()
 
 void loop() 
 {
-	//Serial.println("Running...");
-	//delay(5000);
 }

@@ -29,10 +29,6 @@ void Motor::init()
 void Motor::set(double VOLTS)
 {
 	short PWM = VOLTS * 256 / 12;
-	Serial.print(String(VOLTS) + "\t" + String(PWM) + "\t");
-	Serial.print(String(M_CW) + "\t" + String(PWM > 0 ? HIGH : LOW) + "\t");
-	Serial.print(String(M_CCW) + "\t" + String(PWM < 0 ? HIGH : LOW) + "\t");
-	Serial.println(String(M_PWM));
 	if (PWM != 0)
 	{
 		digitalWrite(M_CW,  PWM > 0 ? HIGH :  LOW);
