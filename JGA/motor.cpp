@@ -11,6 +11,21 @@ void encoder()
 		motor.count--;
 }
 
+void Motor::init()
+{
+	for (byte i = 0; i < 4; i++)
+		pinMode(LEDS[i], OUTPUT);
+	for (byte i = 0; i < 3; i++)
+	{
+		for (byte j = 0; j < 2; j++)
+		{
+			pinMode(M[i][j], OUTPUT);
+			pinMode(ENC[i][j], INPUT);
+		}
+	}
+	attachInterrupt(digitalPinToInterrupt(ENC_A), encoder, CHANGE);
+}
+
 void Motor::exec(short PWM)
 {
 	if (PWM != 0)
@@ -29,5 +44,5 @@ void Motor::exec(short PWM)
 
 double Motor::get()
 {
-	return 0.0;
+	return double(count) / PPR;
 }

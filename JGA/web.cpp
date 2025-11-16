@@ -6,32 +6,35 @@
 extern Service api;
 extern Motor motor;
 
-void post()
+String httpRequestData = "{\"id\":\"0\",\"position\":0.0}";
+int httpResponseCode = 0;
+
+void post(void * parameter)
 {
-	if (WiFi.status() == WL_CONNECTED)
+	while(1)
 	{
-		HTTPClient http;
+		if (WiFi.status() == WL_CONNECTED)
+		{
+			HTTPClient http;
 
-		http.begin(api.postURI); 
-		http.addHeader("Content-Type", "application/json"); 
-		
-		String pos = String(motor.get());
-		String httpRequestData = "{\"id\":\"0\",\"position\":" + pos + "}";
+			http.begin(api.postURI); 
+			http.addHeader("Content-Type", "application/json"); 
+			httpRequestData = "{\"id\":\"0\",\"position\":" + String(motor.get()) + "}";
+			httpResponseCode = http.POST(httpRequestData);
 
-		int httpResponseCode = http.POST(httpRequestData);
-
-		if (httpResponseCode > 0) 
-			neopixelWrite(LED, 10, 10, 10);
+			if (httpResponseCode > 0) 
+				neopixelWrite(LED, 10, 10, 10);
+			else
+				neopixelWrite(LED, 255, 100, 0);
+			http.end();
+		}
 		else
-			neopixelWrite(LED, 255, 200, 0);
-		http.end();
-	}
-	else
-	{
-		neopixelWrite(LED, 255, 0, 100);
-		WiFi.disconnect();
-		WiFi.reconnect();
-		api.verify();
+		{
+			WiFi.disconnect();
+			WiFi.reconnect();
+			api.verify();
+		}
+		vTaskDelay(api.times / portTICK_PERIOD_MS);
 	}
 }
 
