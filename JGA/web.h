@@ -12,4 +12,5 @@ struct Service {
 	void init(byte ID);
 	void config();
 	void post();
+	void verify();
 };

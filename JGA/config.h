@@ -1,7 +1,20 @@
 #include <Arduino.h>
 #define LED   RGB_BUILTIN
-#define ENC_A 16
-#define ENC_B 17
-#define M_CW  25
-#define M_CCW 26
-#define M_PWM 27
+
+const byte LEDS[4] = {11, 12, 13, 14};
+const byte M[3][2] = {
+	{17,18},
+	{10, 9},
+	{8, 3}
+}, ENC[3][2] = {
+	{5, 4},
+	{6, 7},
+	{16, 15}
+};
+
+#define ENC_A 15
+#define ENC_B 16
+
+#define M_PWM 17
+#define M_CW  18
+#define M_CCW  8
