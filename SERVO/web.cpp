@@ -1,10 +1,10 @@
 #include "config.h"
-#include "motor.h"
+//#include "motor.h"
 #include "credentials.h"
 #include "web.h"
 
 extern Service api;
-extern Motor motor;
+//extern Motor motor;
 
 void post(void * parameter)
 {
@@ -16,7 +16,8 @@ void post(void * parameter)
 
 			http.begin(api.postURI); 
 			http.addHeader("Content-Type", "application/json"); 
-			api.request = "{\"id\":\"0\",\"position\":" + String(motor.get()) + "}";
+			//api.request = "{\"id\":\"0\",\"position\":" + String(motor.get()) + "}";
+			api.request = "{\"id\":\"0\",\"position\":0.0}";
 			api.code = http.POST(api.request);
 
 			if (api.code == 200)
@@ -26,15 +27,15 @@ void post(void * parameter)
 				DeserializationError error = deserializeJson(doc, api.response);
 
 				if (error) 
-					neopixelWrite(LED, 255, 100, 0);
+					digitalWrite(LED, HIGH);
 				else 
 				{
-					motor.set(doc["voltage"] | 0.0); 
-					neopixelWrite(LED, 10, 10, 10);
+					//motor.set(doc["voltage"] | 0.0); 
+					digitalWrite(LED, LOW);
 				}
 			}
 			else
-				neopixelWrite(LED, 255, 100, 0);
+				digitalWrite(LED, HIGH);
 			http.end();
 		}
 		else
@@ -60,8 +61,8 @@ void Service::init(byte ID)
 
 void Service::verify()
 {
-	neopixelWrite(LED, 255, 0, 0);
+	digitalWrite(LED, HIGH);
 	while(WiFi.status() != WL_CONNECTED)
 		continue;
-	neopixelWrite(LED, 0, 0, 0);
+	digitalWrite(LED, LOW);
 }
