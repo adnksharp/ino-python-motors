@@ -12,10 +12,10 @@ pos_des = 0.25
 Km = Kt / (Ra * Jm)
 a = (Ra * Kv + Kt * Kb) / (Ra * Jm)
 
-Ks_fact = 0.9
-Kd_est = 0.02
+Ks_fact = 0.7
+Kd_est = 0.01
 A2 = a + Km * Kd_est
-Kp_est = a * 0.0005
+Kp_est = a * 0.00012
 KI_max_Routh = Kp_est * A2 / Km
 Ki_est = KI_max_Routh * Ks_fact
 
