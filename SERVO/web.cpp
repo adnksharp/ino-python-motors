@@ -1,10 +1,10 @@
 #include "config.h"
-//#include "motor.h"
+#include "motor.h"
 #include "credentials.h"
 #include "web.h"
 
 extern Service api;
-//extern Motor motor;
+extern Motor motor;
 
 void post(void * parameter)
 {
@@ -16,8 +16,7 @@ void post(void * parameter)
 
 			http.begin(api.postURI); 
 			http.addHeader("Content-Type", "application/json"); 
-			//api.request = "{\"id\":\"0\",\"position\":" + String(motor.get()) + "}";
-			api.request = "{\"id\":\"0\",\"position\":0.0}";
+			api.request = "{\"id\":\"1\",\"position\":" + String(motor.get()) + "}";
 			api.code = http.POST(api.request);
 
 			if (api.code == 200)
@@ -30,7 +29,7 @@ void post(void * parameter)
 					digitalWrite(LED, HIGH);
 				else 
 				{
-					//motor.set(doc["voltage"] | 0.0); 
+					motor.set(doc["position"] | 0.0); 
 					digitalWrite(LED, LOW);
 				}
 			}
