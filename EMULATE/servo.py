@@ -12,19 +12,12 @@ pos_des = 0.25
 Km = Kt / (Ra * Jm)
 a = (Ra * Kv + Kt * Kb) / (Ra * Jm)
 
-print(f"Constante del Motor (Km): {Km:.4f}")
-print(f"Polo Mecánico (a): {a:.4f}")
-
-Ks_fact = 0.9
-
-Kd_est = 2.5
-
+Ks_fact = 0.07
+Kd_est = 0.02
 A2 = a + Km * Kd_est
-
-Kp_est = a * 0.1
-
+Kp_est = a * 0.4
 KI_max_Routh = Kp_est * A2 / Km
-Ki_est = KI_max_Routh * Ks_fact
+Ki_est = KI_max_Routh / Ks_fact
 
 if Ki_est <= 0:
     Ki_est = 0.001
@@ -59,8 +52,8 @@ sys_voltage = ctrl.minreal(sys_voltage, verbose=False)
 sys_current = (sys_voltage - Kb * s * sys_est) / Ra
 sys_current = ctrl.minreal(sys_current, verbose=False)
 
-T_end = 0.5
-time = np.linspace(0, T_end, 500)
+T_end = 50
+time = np.linspace(0, T_end, T_end * 100)
 
 T_pos, Y_pos = ctrl.step_response(sys_est, time)
 T_volt, Y_volt = ctrl.step_response(sys_voltage, time)
@@ -74,6 +67,7 @@ polos_estables = ctrl.poles(sys_est)
 print("\nPolos del Sistema (Estable):")
 print(polos_estables)
 
+"""
 plt.figure(figsize=(10, 8))
 plt.suptitle('Respuesta del Servomotor SG90 (Modelo Simplificado + PID)', fontsize=16)
 
@@ -102,3 +96,4 @@ plt.grid()
 
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 plt.show()
+"""
