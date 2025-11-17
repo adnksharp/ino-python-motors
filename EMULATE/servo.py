@@ -2,27 +2,27 @@ import numpy as np
 import control as ctrl
 import matplotlib.pyplot as plt
 
-Ra = 9.23
-Kb = 0.0269
-Kv = 1.13e-5
-Jm = 50e-6
-Kt = 0.0269
+Ra = 3.69
+Kb = 0.151
+Kv = 0.00519
+Jm = 10e-6
+Kt = 0.151
 pos_des = 0.25
 
 Km = Kt / (Ra * Jm)
 a = (Ra * Kv + Kt * Kb) / (Ra * Jm)
 
-Ks_fact = 0.07
+Ks_fact = 0.9
 Kd_est = 0.02
 A2 = a + Km * Kd_est
-Kp_est = a * 0.4
+Kp_est = a * 0.0005
 KI_max_Routh = Kp_est * A2 / Km
-Ki_est = KI_max_Routh / Ks_fact
+Ki_est = KI_max_Routh * Ks_fact
 
 if Ki_est <= 0:
     Ki_est = 0.001
 
-print(f"Ganancias Estables: Kp={Kp_est:.4f}, Ki={Ki_est:.4f}, Kd={Kd_est:.4f}")
+print(f"Ganancias Estables: Kp={Kp_est:.4f}, {Ki_est:.4f}, {Kd_est:.4f}")
 
 A3 = 1
 A2_lc = A2
