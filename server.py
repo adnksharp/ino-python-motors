@@ -3,6 +3,8 @@ import numpy as np
 import threading
 import time
 
+thrlock = threading.Lock()
+
 rtd = 2 * np.pi
 dtr = 1 / rtd
 
@@ -22,11 +24,16 @@ device = {
     }
 }
 
-refMREV = 0.25
-refMRAD = refMREV * rtd
-
-refSREV = 0.25
-refSRAD = refSREV * rtd
+ref = {
+    '0': {
+        'rev': 0.0,
+        'rad': 0.0
+        },
+    '1': {
+        'rev': 0.0,
+        'rad': 0.0
+    }
+}
 
 maxSREV = 0.45 
 maxSRAD = maxSREV * rtd
@@ -88,10 +95,13 @@ def calcPID(ID, Kp, Ki, Kd, ref, maxy):
 def setMotor(ID, posREV):
     posRAD = posREV * rtd
     
+    with thrlock:
+        radRef = ref[ID]['rad']
+        revRef = ref[ID]['rev']
     device[ID]['pos'] = posRAD
     
     cmd = calcPID(
-        ID, kPM, kIM, kDM, refMRAD, maxMV
+        ID, kPM, kIM, kDM, radRef, maxMV
     )
 
     if abs(cmd) > 0 and abs(cmd) < minMV:
@@ -101,7 +111,7 @@ def setMotor(ID, posREV):
             cmd = -minMV
     cmd = np.clip(cmd, -maxMV, maxMV)
     
-    print(f"[{ID}] POS: [{posREV:.2f} rev | {posRAD:.2f} rad] WRK: [{cmd:.4f} V] REF: [{refMREV:.2f} rev | {refMRAD:.2f} rad]")
+    print(f"[{ID}] POS: [{posREV:.2f} rev | {posRAD:.2f} rad] WRK: [{cmd:.4f} V] REF: [{revRef:.2f} rev | {radRef:.2f} rad]")
     
     return jsonify({
         "status": "success", 
@@ -113,15 +123,18 @@ def setMotor(ID, posREV):
 def setServo(ID, posREV):
     posRAD = posREV * rtd
     
+    with thrlock:
+        radRef = ref[ID]['rad']
+        revRef = ref[ID]['rev']
     device[ID]['pos'] = posRAD
     
     cmdRAD = calcPID(
-        ID, kPS, kIS, kDS, refSRAD, maxSRAD
+        ID, kPS, kIS, kDS, radRef, maxSRAD
     )
     
     cmdREV = cmdRAD * dtr
 
-    print(f"[{ID}] POS: [{posREV:.2f} rev | {posRAD:.2f} rad] WRK: [{cmdREV:.4f} rev  | {cmdRAD:.2f} rad] REF: [{refSREV:.2f} rev | {refSRAD:.2f} rad]")
+    print(f"[{ID}] POS: [{posREV:.2f} rev | {posRAD:.2f} rad] WRK: [{cmdREV:.4f} rev  | {cmdRAD:.2f} rad] REF: [{revRef:.2f} rev | {radRef:.2f} rad]")
 
     return jsonify({
         "status": "success", 
@@ -147,7 +160,7 @@ def receive_data():
     try:
         posREV = float(posREV)
     except ValueError:
-        return jsonify({"status": "error"}), 400
+        return jsonify({"status": "error"}), 406
 
     if ID == '0':
         return setMotor(ID, posREV)
@@ -156,7 +169,40 @@ def receive_data():
         return setServo(ID, posREV)
     
     else:
+        return jsonify({"status": "error"}), 401
+
+@app.route('/ref_cmd', methods=['POST'])
+def set_reference():
+    if not request.is_json:
         return jsonify({"status": "error"}), 400
+
+    data = request.get_json()
+    
+    ID = data.get('id')
+    newrev = data.get('ref')
+    
+    if ID is None or newrev is None:
+        return jsonify({"status": "error"}), 400
+    
+    if ID not in ref:
+        return jsonify({"status": "error"}), 401
+
+    try:
+        newrev = float(newrev)
+    except ValueError:
+        return jsonify({"status": "error"}), 406
+
+    newrad = newrev * rtd
+    
+    with thrlock:
+        ref[ID]['rev'] = newrev
+        ref[ID]['rad'] = newrad
+
+    return jsonify({
+        "status": "success",
+        "message": f"{ID} updated.",
+        "new": newrev
+    }), 200
 
 if __name__ == '__main__':
     import logging
