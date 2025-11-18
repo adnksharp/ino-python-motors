@@ -8,14 +8,14 @@ Kb = 0.0269
 Kv = 1.13e-5
 Jm = 50e-6 
 Kt = 0.0269
-Ks_fact = 0.12
+Ks_fact = 0.45
 pos_des = 0.25
 
 Den_a = La * Jm
 Num_a3 = La * Kv + Ra * Jm
 Num_a2_c = Ra * Kv + Kt * Kb
 
-Kd_est = 0.38
+Kd_est = 0.1
 
 KP_max_Routh_num = Num_a3 * (Kt * Kd_est + Num_a2_c)
 KP_max_Routh_den = Kt * Den_a
@@ -30,7 +30,7 @@ Ki_est = Ki_max_Routh * Ks_fact
 if Ki_est <= 0:
     Ki_est = 0.001
 
-print(f"Ganancias Estables: Kp={Kp_est:.4f}, Ki={Ki_est:.4f}, Kd={Kd_est:.4f}")
+print(f"Ganancias Estables: Kp={Kp_est:.4f}, {Ki_est:.4f}, {Kd_est:.4f}")
 
 a4 = Den_a
 a3 = Num_a3

@@ -67,7 +67,6 @@ polos_estables = ctrl.poles(sys_est)
 print("\nPolos del Sistema (Estable):")
 print(polos_estables)
 
-"""
 plt.figure(figsize=(10, 8))
 plt.suptitle('Respuesta del Servomotor SG90 (Modelo Simplificado + PID)', fontsize=16)
 
@@ -96,4 +95,3 @@ plt.grid()
 
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 plt.show()
-"""
