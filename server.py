@@ -51,12 +51,14 @@ minMV = 1.5
 kPM, kIM, kDM = 0.6168, 1.1387, 0.1000
 kPS, kIS, kDS = 0.1364, 0.2750, 0.0100
 
-def save(ID, POS, OUT):
+def save(ID, POS, REF, OUT):
     try:
         data_entry = {
             "timestamp": time.time(),
             "ID": ID,
             "POS": POS,
+            "REF": REF,
+            "ERR": abs(REF - POS),
             "OUT": OUT
         }
         collection.insert_one(data_entry)
@@ -133,7 +135,7 @@ def setMotor(ID, posREV):
     
     print(f"[{ID}] POS: [{posREV:.2f} rev | {posRAD:.2f} rad] WRK: [{cmd:.4f} V] REF: [{revRef:.2f} rev | {radRef:.2f} rad]")
     dbson = {"TYPE": "VOLTAGE", "VAL": cmd}
-    save(ID, posREV, dbson)
+    save(ID, posREV, radRef * dtr, dbson)
     
     return jsonify({
         "status": "success", 
@@ -158,7 +160,7 @@ def setServo(ID, posREV):
 
     print(f"[{ID}] POS: [{posREV:.2f} rev | {posRAD:.2f} rad] WRK: [{cmdREV:.4f} rev  | {cmdRAD:.2f} rad] REF: [{revRef:.2f} rev | {radRef:.2f} rad]")
     dbson = {"TYPE": "POSITION", "VAL": cmdREV}
-    save(ID, posREV, dbson)
+    save(ID, posREV, radRef * dtr, dbson)
 
     return jsonify({
         "status": "success", 
