@@ -2,11 +2,19 @@ from flask import Flask, request, jsonify
 import numpy as np
 import threading
 import time
+from pymongo import MongoClient
 
 thrlock = threading.Lock()
 
 rtd = 2 * np.pi
 dtr = 1 / rtd
+
+mongo = {
+    'uri': 'mongodb://localhost:27017/',
+    'db': 'motors',
+    'collect': 'project'
+}
+
 
 device = {
     '0': {
@@ -42,6 +50,18 @@ minMV = 1.5
 
 kPM, kIM, kDM = 0.6168, 1.1387, 0.1000
 kPS, kIS, kDS = 0.1364, 0.2750, 0.0100
+
+def save(ID, POS, OUT):
+    try:
+        data_entry = {
+            "timestamp": time.time(),
+            "ID": ID,
+            "POS": POS,
+            "OUT": OUT
+        }
+        collection.insert_one(data_entry)
+    except Exception as e:
+        print(f"Error al guardar datos en MongoDB: {e}")
 
 def calcPID(ID, Kp, Ki, Kd, ref, maxy):
     state = device[ID]
@@ -112,6 +132,8 @@ def setMotor(ID, posREV):
     cmd = np.clip(cmd, -maxMV, maxMV)
     
     print(f"[{ID}] POS: [{posREV:.2f} rev | {posRAD:.2f} rad] WRK: [{cmd:.4f} V] REF: [{revRef:.2f} rev | {radRef:.2f} rad]")
+    dbson = {"TYPE": "VOLTAGE", "VAL": cmd}
+    save(ID, posREV, dbson)
     
     return jsonify({
         "status": "success", 
@@ -135,6 +157,8 @@ def setServo(ID, posREV):
     cmdREV = cmdRAD * dtr
 
     print(f"[{ID}] POS: [{posREV:.2f} rev | {posRAD:.2f} rad] WRK: [{cmdREV:.4f} rev  | {cmdRAD:.2f} rad] REF: [{revRef:.2f} rev | {radRef:.2f} rad]")
+    dbson = {"TYPE": "POSITION", "VAL": cmdREV}
+    save(ID, posREV, dbson)
 
     return jsonify({
         "status": "success", 
@@ -206,6 +230,13 @@ def set_reference():
 
 if __name__ == '__main__':
     import logging
+    try:
+        client = MongoClient(mongo['uri'])
+        db = client[mongo['db']]
+        collection = db[mongo['collect']]
+        print(f' * MONGODB OK')
+    except Exception as e:
+        print(f' * MONGODB FAIL')
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
