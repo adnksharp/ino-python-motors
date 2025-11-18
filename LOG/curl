@@ -1,0 +1,21 @@
+>. /project  /base !
+>. curl -X POST http://127.0.0.1:5000/ref_cmd \
+     -H "Content-Type: application/json" \
+     -d '{"id": "0", "ref": 0.2}'
+{"message":"Reference for device 0 updated.","new":0.2,"status":"success"}
+>. /project  /base !
+>. curl -X POST http://127.0.0.1:5000/ref_cmd \
+     -H "Content-Type: application/json" \
+     -d '{"id": "0", "ref": 0.2}'
+{"message":"Reference for device 0 updated.","new":0.2,"status":"success"}
+>. /project  /base !
+>. curl -X POST http://127.0.0.1:5000/ref_cmd \
+     -H "Content-Type: application/json" \
+     -d '{"id": "1", "ref": 0.2}'
+{"message":"1 updated.","new":0.2,"status":"success"}
+>. /project  /base !
+>. curl -X POST http://127.0.0.1:5000/ref_cmd \
+     -H "Content-Type: application/json" \
+     -d '{"id": "1", "ref": 0.25}'
+{"message":"1 updated.","new":0.25,"status":"success"}
+
